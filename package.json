@@ -4,7 +4,8 @@
   "description": "musestream-backend",
   "main": "src/main.ts",
   "scripts": {
-    "start": "nodemon src/main.ts"
+    "start": "nodemon src/main.ts",
+    "init": "prisma migrate reset --force"
   },
   "repository": {
     "type": "git",

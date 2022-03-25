@@ -18,6 +18,14 @@ Projekt pre predmet MTAA 2022 - Sebastian Petrik a Stefan Otto Novak.
 ```
 npm i
 ```
+- create .env file in root of project and add database connection url to it, it should look like this: (you must set name and password to your own)
+```
+DATABASE_URL="postgresql://name:password@localhost:5432/musestream-db?schema=public"
+```
+- activate Prisma reset migration and database initialisation
+```
+npm run init
+```
 - start the server by running
 ```
 npm start
