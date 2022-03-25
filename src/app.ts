@@ -1,5 +1,7 @@
 import express from 'express'
 import cors from 'cors'
+import { db } from './db'
+import { User } from '@prisma/client'
 
 export async function createApp() {
     console.log('MuseStream backend')

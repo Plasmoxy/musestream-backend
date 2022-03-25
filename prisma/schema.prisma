@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserType {
+  student
+  teacher
+  admin
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String
+  type       UserType @default(student)
+  hash       String
+  pictureUrl String
+
+  classes       Class[] // has classes IF teacher
+  requests      ClassRequest[] // student requests
+  classStudents ClassStudent[] // has ClassStudent records IF student
+  messages Message[] // user has number of his messages
+}
+
+model Class {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String @default("")
+  instrument  String
+
+  // Class must have a teacher
+  teacherId Int
+  teacher   User @relation(fields: [teacherId], references: [id])
+
+  requests ClassRequest[] // class has requests
+  students ClassStudent[] // has students
+  files File[] // has files
+}
+
+model ClassRequest {
+  id      Int      @id @default(autoincrement())
+  date    DateTime @default(now())
+  message String
+
+  // connected to a Class
+  classId   Int
+  class     Class @relation(fields: [classId], references: [id])
+  
+  // and a student
+  studentId Int
+  student   User  @relation(fields: [studentId], references: [id])
+}
+
+model ClassStudent {
+  id Int @id @default(autoincrement())
+
+  // connected with a Class
+  classId   Int
+  class     Class @relation(fields: [classId], references: [id])
+  
+  // ... and a student - User
+  studentId Int
+  student   User  @relation(fields: [studentId], references: [id])
+
+  lessons Lesson[] // ClassStudent record has number of lessons
+}
+
+model Lesson {
+  id    Int      @id @default(autoincrement())
+  notes String   @default("")
+  start DateTime
+  end   DateTime
+
+  // belongs to ClassStudent
+  classStudentId Int
+  classStudent   ClassStudent @relation(fields: [classStudentId], references: [id])
+  
+  messages Message[] // lesson has messages
+}
+
+model Message {
+  id      Int      @id @default(autoincrement())
+  date    DateTime
+  content String
+
+  // belongs to lesson
+  lessonId Int
+  lesson Lesson @relation(fields: [lessonId], references: [id])
+  
+  // also belongs to user
+  authorId Int
+  author User @relation(fields: [authorId], references: [id])
+}
+
+model File {
+  id    Int    @id @default(autoincrement())
+  title String
+  path  String
+
+  // belongs to class
+  classId Int
+  class Class @relation(fields: [classId], references: [id])
+}
